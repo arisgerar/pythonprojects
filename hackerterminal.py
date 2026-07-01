@@ -9,7 +9,7 @@ GREEN = "\033[92m"
 RESET = "\033[0m"
 
 # Clear terminal
-os.system("cls" if os.name == "nt" else "clear")
+#os.system("cls" if os.name == "nt" else "clear")
 
 logo = GREEN + r"""
 
@@ -26,7 +26,7 @@ logo = GREEN + r"""
                          Version 2.4
 =====================================================================
 
-""" + RESET
+""" + RESET 
 
 print(logo)
 
