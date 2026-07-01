@@ -4,8 +4,26 @@ import json
 
 
 def load_lyrics(path):
+    lyrics = []
+    metadata = {
+        "album": "Single"
+    }
+
     with open(path, "r", encoding="utf-8") as f:
-        return [line.strip() for line in f if line.strip()]
+        for line in f:
+            line = line.strip()
+
+            if line.startswith("[album:"):
+                metadata["album"] = line[7:-1].strip()
+                continue
+
+            if line.startswith("["):
+                continue
+
+            if line:
+                lyrics.append(line)
+
+    return lyrics, metadata
 
 
 def load_template(path):
@@ -14,10 +32,11 @@ def load_template(path):
 
 
 class App:
-    def __init__(self, root, lines, template):
+    def __init__(self, root, lines, template, metadata):
         self.root = root
         self.lines = lines
         self.template = template
+        self.metadata = metadata
         self.i = 0
 
         # Window settings
@@ -53,6 +72,19 @@ class App:
 
         self.label.pack(expand=True, fill="both")
 
+        # Song information window
+        self.info = tk.Toplevel(root)
+        self.info.title("Song Information")
+        self.info.geometry("250x100")
+
+        self.album_label = tk.Label(
+            self.info,
+            text=f"Album: {self.metadata['album']}",
+            font=("Arial", 12)
+        )
+
+        self.album_label.pack(padx=10, pady=10)
+
         root.configure(
             bg=template.get("background", "black")
         )
@@ -77,26 +109,22 @@ class App:
         self.show()
 
 
-
 if __name__ == "__main__":
 
     if len(sys.argv) < 3:
-        print(
-            "usage: python app.py lyrics.txt template.json"
-        )
+        print("usage: python lyriclicker.py lyrics.txt template.json")
         sys.exit()
 
-
-    lyrics = load_lyrics(sys.argv[1])
+    lyrics, metadata = load_lyrics(sys.argv[1])
     template = load_template(sys.argv[2])
-
 
     root = tk.Tk()
 
     App(
         root,
         lyrics,
-        template
+        template,
+        metadata
     )
 
     root.mainloop()
